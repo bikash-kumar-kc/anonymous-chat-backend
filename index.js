@@ -1,13 +1,13 @@
 import 'dotenv/config'
 import http from 'http'
-import { app } from './app.js'
-import { connectDb } from './config/db.js'
-import { connectRedis } from './config/redis.js'
-import { initSocket } from './config/socket.js'
-import { startWorkers } from './workers/index.js'
-import { scheduleGhostCleanup } from './jobs/ghostCleanup.job.js'
+import { app } from './src/app.js'
+import { connectDb } from './src/config/db.js'
+import { connectRedis } from './src/config/redis.js'
+import { initSocket } from './src/config/socket.js'
+import { startWorkers } from './src/queues/workers/index.js'
+import { scheduleGhostCleanup } from './src/queues/jobs/ghostCleanup.job.js'
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8000
 
 async function start() {
   try {
