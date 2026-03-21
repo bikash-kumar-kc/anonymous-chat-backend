@@ -1,21 +1,17 @@
-import pg from 'pg'
+import { neon } from '@neondatabase/serverless'
+import { drizzle } from 'drizzle-orm/neon-http'
+import * as schema from '../db/schema.js'
 
-const pool = new pg.Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000
-})
+const sql = neon(process.env.DATABASE_URL)
+export const db = drizzle(sql, { schema })
 
 export async function connectDb() {
-  // test connection on startup
-  const client = await pool.connect()
-  await client.query('SELECT 1')
-  client.release()
+  try {
+    // test connection
+    await sql`SELECT 1`
+  } catch (_err) {
+    console.warn('DB cold start, retrying...')
+    await new Promise(r => setTimeout(r, 2000))
+    await sql`SELECT 1`
+  }
 }
-
-export { pool as db }
