@@ -18,7 +18,7 @@ export async function insertMessage(roomId, senderToken, content) {
     })
 
   return result[0]
-}
+};
 
 // soft delete flagged message — called by deletion worker
 export async function deleteMessage(messageId) {
@@ -26,4 +26,4 @@ export async function deleteMessage(messageId) {
     .update(messages)
     .set({ status: 'deleted' })
     .where(eq(messages.id, messageId))
-}
+};

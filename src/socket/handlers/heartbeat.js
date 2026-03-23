@@ -6,7 +6,7 @@ export async function onHeartbeat(socket) {
     if (!userId) return
 
     await redis.hset(`user:${userId}`, 'lastSeen', Date.now())
-    socket.emit('heartbeat_ack')
+    socket.emit('heartbeat_ack');
 
   } catch (err) {
     console.error('onHeartbeat error:', err)

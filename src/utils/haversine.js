@@ -11,7 +11,7 @@ function toRad(deg) {
     const a =
       Math.sin(dLat / 2) ** 2 +
       Math.cos(toRad(pointA.lat)) *
-      Math.cos(toRad(pointB.lat)) *
+      Math.cos(toRad(pointB.lat)) * 
       Math.sin(dLng / 2) ** 2
   
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))

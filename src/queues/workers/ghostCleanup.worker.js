@@ -8,33 +8,33 @@ const DEFINITE_THRESHOLD = 5 * 60 * 1000   // 5 minutes → definite ghost
 
 export function startGhostCleanupWorker() {
   return new Worker('ghost-cleanup', async () => {
-    const io = getIo()
+    const io = getIo();
     const now = Date.now()
 
     // get all user keys
-    const userKeys = await redis.keys('user:*')
-    if (!userKeys.length) return
+    const userKeys = await redis.keys('user:*');
+    if (!userKeys.length) return;
 
     for (const key of userKeys) {
-      const user = await redis.hgetall(key)
-      if (!user || !user.lastSeen || !user.userId) continue
+      const user = await redis.hgetall(key);
+      if (!user || !user.lastSeen || !user.userId) continue;
 
-      const timeSince = now - parseInt(user.lastSeen)
+      const timeSince = now - parseInt(user.lastSeen);
 
       if (timeSince >= DEFINITE_THRESHOLD) {
         // definite ghost → clean up
-        console.log(`👻 Removing ghost user: ${user.displayName}`)
+        console.log(`👻 Removing ghost user: ${user.displayName}`);
 
         if (user.roomId) {
           await leaveRoom(io, user.userId, user.roomId)
-        }
+        };
 
-        await redis.del(key)
-        await redis.del(`strikes:${user.userId}`)
+        await redis.del(key);
+        await redis.del(`strikes:${user.userId}`);
 
       } else if (timeSince >= GHOST_THRESHOLD) {
         // suspected ghost → mark it
-        await redis.hset(key, 'status', 'suspected_ghost')
+        await redis.hset(key, 'status', 'suspected_ghost');
       }
     }
 

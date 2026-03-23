@@ -5,7 +5,7 @@ const redis = new Redis({
   host: process.env.REDIS_HOST || 'localhost',
   port: process.env.REDIS_PORT || 6379,
   password: process.env.REDIS_PASS || undefined,
-  maxRetriesPerRequest: null // required for BullMQ
+  maxRetriesPerRequest: null 
 });
 
 
@@ -15,4 +15,4 @@ export async function connectRedis() {
   await redis.ping()
 }
 
-export { redis }
+export { redis };

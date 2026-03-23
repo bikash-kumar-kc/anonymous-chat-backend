@@ -17,5 +17,4 @@ const adjectives = [
     return `${adj}${noun}${number}` // e.g. SilentFox42
   };
 
-
-  generateDisplayName()
+  console.log(generateDisplayName());

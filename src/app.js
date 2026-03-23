@@ -18,4 +18,4 @@ app.use('/api', joinRouter)
 // health check
 app.get('/health', (req, res) => res.json({ status: 'ok' }))
 
-export { app }
+export { app };

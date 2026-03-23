@@ -8,5 +8,5 @@ export async function assignRoom(socket, userId, roomId) {
   await redis.hset(`user:${userId}`, 'roomId', roomId)
 
   // join socket room
-  socket.join(roomId)
+  socket.join(roomId);
 }

@@ -9,7 +9,7 @@ const defaultJobOptions = {
   },
   removeOnComplete: 100, // keep last 100 completed jobs
   removeOnFail: 200      // keep last 200 failed jobs
-}
+};
 
 export const moderationQueue = new Queue('moderation', {
   connection: redis,

@@ -13,7 +13,7 @@ export const rooms = pgTable('rooms', {
 }, (table) => ({
   centerPointIdx: index('idx_rooms_center_point').on(table.centerPoint),
   isActiveIdx: index('idx_rooms_is_active').on(table.isActive)
-}))
+}));
 
 export const messages = pgTable('messages', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -25,7 +25,7 @@ export const messages = pgTable('messages', {
 }, (table) => ({
   roomIdIdx: index('idx_messages_room_id').on(table.roomId, table.sentAt),
   statusIdx: index('idx_messages_status').on(table.status)
-}))
+}));
 
 export const blacklist = pgTable('blacklist', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -36,4 +36,4 @@ export const blacklist = pgTable('blacklist', {
   expiresAt: timestamp('expires_at', { withTimezone: true })
 }, (table) => ({
   hashedIpIdx: index('idx_blacklist_hashed_ip').on(table.hashedIp)
-}))
+}));

@@ -56,5 +56,5 @@ export async function deactivateRoom(roomId) {
   await db
     .update(rooms)
     .set({ isActive: false })
-    .where(eq(rooms.id, roomId))
-}
+    .where(eq(rooms.id, roomId));
+};

@@ -5,9 +5,9 @@ import { notificationQueue } from '../index.js'
 
 export function startStrikeWorker() {
   return new Worker('strike', async (job) => {
-    const { userId, hashedIp } = job.data
+    const { userId, hashedIp } = job.data;
 
-    const user = await redis.hgetall(`user:${userId}`)
+    const user = await redis.hgetall(`user:${userId}`);
     if (!user) return
 
     const result = await handleStrike(userId, hashedIp)

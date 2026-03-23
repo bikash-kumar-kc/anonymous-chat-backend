@@ -18,7 +18,7 @@ export async function isBlacklisted(hashedIp) {
   if (permanent) return { blacklisted: true, type: 'permanent' }
 
   // clean expired temp bans first
-  await redis.zremrangebyscore('blacklist:ip:temp', 0, Date.now())
+  await redis.zremrangebyscore('blacklist:ip:temp', 0, Date.now());
 
   // check temp
   const temp = await redis.zscore('blacklist:ip:temp', hashedIp)

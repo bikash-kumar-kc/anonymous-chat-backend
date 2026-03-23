@@ -18,7 +18,7 @@ export async function onLocationUpdate(io, socket, { lat, lng }) {
     // debounce — wait 10s before acting on location change
     if (reassignTimeouts.has(userId)) {
       clearTimeout(reassignTimeouts.get(userId));
-    }
+    };
 
     reassignTimeouts.set(
       userId,

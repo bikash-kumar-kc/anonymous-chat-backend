@@ -24,7 +24,7 @@ export async function findOrCreateRoom(lat, lng) {
 }
 
 function getGridCellId(lat, lng) {
-  const gridLat = Math.floor(lat * 100)
-  const gridLng = Math.floor(lng * 100)
+  const gridLat = Math.floor(lat * 20)
+  const gridLng = Math.floor(lng * 20)
   return Math.abs(gridLat * 1000 + gridLng)
 }

@@ -6,7 +6,7 @@ import { onDisconnect } from './handlers/disconnect.js'
 
 export function registerHandlers(io, socket) {
   // first thing — run connection handler
-  onConnection(io, socket)
+  onConnection(io, socket);
 
   // register all event handlers
   socket.on('message', (data) => onMessage(io, socket, data))

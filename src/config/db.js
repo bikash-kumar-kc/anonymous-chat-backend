@@ -9,7 +9,7 @@ export async function connectDb() {
   try {
     // test connection
     await sql`SELECT 1`
-  } catch (_err) {
+  } catch  {
     console.warn('DB cold start, retrying...')
     await new Promise(r => setTimeout(r, 2000))
     await sql`SELECT 1`

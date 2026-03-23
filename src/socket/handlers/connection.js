@@ -34,6 +34,7 @@ export async function onConnection(io, socket) {
       strikes: 0,
       status: "active",
     });
+
     await redis.expire(`user:${userId}`, 2 * 60 * 60);
 
     // attach to socket for use in other handlers

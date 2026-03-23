@@ -6,10 +6,10 @@ export function startNotificationWorker() {
   return new Worker('notification', async (job) => {
     const { userId, socketId, type, message, messageId } = job.data
 
-    const io = getIo()
+    const io = getIo();
 
     // find socket by id
-    const socket = io.sockets.sockets.get(socketId)
+    const socket = io.sockets.sockets.get(socketId);
 
     if (!socket) return // user already disconnected, skip silently
 
@@ -30,7 +30,7 @@ export function startNotificationWorker() {
 
     if (type === 'banned_temp') {
       socket.emit('banned', { message, type: 'temporary' })
-      socket.disconnect()
+      socket.disconnect();
       return
     }
 

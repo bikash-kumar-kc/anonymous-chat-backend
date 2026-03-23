@@ -26,7 +26,7 @@ async function start() {
     console.log('✅ Socket.io initialized')
 
     // 4. start BullMQ workers
-    startWorkers()
+    startWorkers();
     console.log('✅ Workers started')
 
     // 5. schedule cleanup job

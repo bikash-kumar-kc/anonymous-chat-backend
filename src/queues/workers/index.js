@@ -11,18 +11,18 @@ export function startWorkers() {
     startStrikeWorker(),
     startNotificationWorker(),
     startGhostCleanupWorker()
-  ]
+  ];
 
   // global error handler for all workers
   workers.forEach((worker) => {
     worker.on('failed', (job, err) => {
       console.error(`❌ Worker job failed [${job?.name}]:`, err.message)
-    })
+    });
 
     worker.on('completed', (job) => {
       console.log(`✅ Worker job completed [${job?.name}]`)
-    })
-  })
+    });
+  });
 
   return workers
 }

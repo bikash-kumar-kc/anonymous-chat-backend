@@ -14,24 +14,24 @@ const FLAGGED_CATEGORIES = [
   'self-harm',
   'sexual',
   'violence'
-]
+];
 
 export function startModerationWorker() {
   return new Worker('moderation', async (job) => {
-    const { messageId, content, userId, roomId, socketId, hashedIp } = job.data
+    const { messageId, content, userId, roomId, socketId, hashedIp } = job.data;
 
     // call OpenAI moderation
-    const response = await openai.moderations.create({ input: content })
-    const result = response.results[0]
+    const response = await openai.moderations.create({ input: content });
+    const result = response.results[0];
 
-    if (!result.flagged) return // clean → do nothing
+    if (!result.flagged) return // clean → do nothing;
 
     // check which categories were flagged
     const flaggedCategories = FLAGGED_CATEGORIES.filter(
       (cat) => result.categories[cat] === true
-    )
+    );
 
-    console.log(`⚠️ Message ${messageId} flagged: ${flaggedCategories.join(', ')}`)
+    console.log(`⚠️ Message ${messageId} flagged: ${flaggedCategories.join(', ')}`);
 
     // trigger downstream queues in parallel
     await Promise.all([

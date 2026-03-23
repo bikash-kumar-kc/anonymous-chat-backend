@@ -11,11 +11,11 @@ export async function onDisconnect(io, socket) {
 
     // leave room cleanly
     if (user.roomId) {
-      await leaveRoom(io, userId, user.roomId)
+      await leaveRoom(io, userId, user.roomId);
     }
 
     // delete user session from Redis
-    await redis.del(`user:${userId}`)
+    await redis.del(`user:${userId}`);
 
     console.log(`❌ ${user.displayName} disconnected`)
 

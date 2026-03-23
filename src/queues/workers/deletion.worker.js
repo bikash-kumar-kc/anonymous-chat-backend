@@ -11,7 +11,7 @@ export function startDeletionWorker() {
     await deleteMessage(messageId)
 
     // tell room to remove message from UI
-    const io = getIo()
+    const io = getIo();
     io.to(roomId).emit('message_deleted', { messageId })
 
   }, {

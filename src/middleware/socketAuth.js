@@ -46,4 +46,4 @@ export async function socketAuthMiddleware(socket, next) {
     console.error('socketAuthMiddleware error:', err)
     next(new Error('INTERNAL_ERROR'))
   }
-}
+};

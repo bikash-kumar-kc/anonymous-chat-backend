@@ -59,6 +59,7 @@ export async function onMessage(io, socket, { content, roomId }) {
       socketId: socket.id,
       hashedIp: socket.hashedIp,
     });
+    
   } catch (err) {
     console.error("onMessage error:", err);
   }
