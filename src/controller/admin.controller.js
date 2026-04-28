@@ -8,7 +8,7 @@ import { redis } from "../config/redis.js";
 import { getIo } from "../config/socket.js";
 import bcrypt from "bcryptjs";
 
-export const handleAdminLogin =  (req, res) => {
+export const handleAdminLogin = (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -20,13 +20,9 @@ export const handleAdminLogin =  (req, res) => {
   }
 
   try {
-
-    const valid = bcrypt.compare(
-      password,
-      process.env.ADMIN_PASSWORD_HASH,
-    );
+    const valid = bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
     if (!valid) {
-console.error(`Invalid password!!!`)
+      console.error(`Invalid password!!!`);
       return res.status(401).json({ error: "Invalid credentials" });
     }
     const token = jwt.sign(
@@ -197,6 +193,126 @@ export const removeBlackListIp = async (req, res, next) => {
     return res.json({ success: true });
   } catch (error) {
     console.error("DELETE /admin/blacklist error:", error);
+    next(error);
+  }
+};
+
+export const getActiveUsers = async (req, res, next) => {
+  try {
+    const userKeys = await redis.keys("user:*");
+
+    if (!userKeys.length) {
+      console.log("No users in the application !!!");
+      return res.json({ users: [], total: 0 });
+    }
+
+    const users = await Promise.all(
+      userKeys.map(async (key) => {
+        const user = await redis.hgetall(key);
+        if (!user || !user.userId) return null;
+
+        return {
+          userId: user.userId,
+          displayName: user.displayName,
+          roomId: user.roomId,
+        };
+      }),
+    );
+
+    return res.status(200).json({ users });
+  } catch (error) {
+    console.error("GET /admin/users error:", error);
+    next(error);
+  }
+};
+
+export const getUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await redis.hgetall(`user:${userId}`);
+
+    if (!user || !user.userId) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const allStikes = await redis.zrangebyscore(
+      `strikes:${userId}`,
+      "-inf",
+      "+inf",
+      "WITHSCORES",
+    );
+
+    const strikeHistory = [];
+
+    for (let i = 0; i < allStikes.length; i += 2) {
+      strikeHistory.push({
+        strikeId: allStikes[i],
+        timeStamp: new Date(parseInt(allStikes[i + 1])).toISOString(),
+      });
+    }
+
+    const banCount = parseInt(
+      (await redis.get(`bancount:${user.hashedIp}`)) || 0,
+    );
+
+    return res.json({
+      userId: user.userId,
+      displayName: user.displayName,
+      hashedIp: user.hashedIp,
+      roomId: user.roomId || null,
+      socketId: user.socketId,
+      location: {
+        lat: parseFloat(user.lat) || null,
+        lng: parseFloat(user.lng) || null,
+      },
+
+      status: user.status,
+      lastSeen: new Date(parseInt(user.lastSeen)).toISOString(),
+      moderation: {
+        strikeHistory,
+        totalStrikes: strikeHistory.length,
+        banCount,
+      },
+    });
+  } catch (error) {
+    console.error("GET /admin/users/:userId error:", error);
+    next(error);
+  }
+};
+
+export const removeUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await redis.hgetall(`user:${userId}`);
+
+    if (!user || !user.userId) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const io = getIo();
+
+    const socket = io.sockets.sockets.get(user.socketId);
+    if (socket) {
+      socket.emit("kicked", { message: "You have been removed by an admin" });
+      setTimeout(() => {
+        socket.disconnect();
+      }, 1000);
+    }
+
+    if (user.roomId) {
+      await redis.srem(`room:${user.roomId}:users`, userId);
+      io.to(user.roomId).emit("user_left", {
+        message: " A user has left the area",
+      });
+    }
+
+    await redis.del(`user:${userId}`);
+
+    return res.json({ msg: `User with userId : ${userId} is removed` });
+  } catch (error) {
+    console.error('DELETE /admin/users/:userId error:', error)
     next(error);
   }
 };

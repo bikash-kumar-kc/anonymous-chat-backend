@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getActiveRooms, getBlackListedIps, handleAdminLogin, handleBlackListIp, removeBlackListIp } from "../controller/admin.controller.js";
+import { getActiveRooms, getActiveUsers, getBlackListedIps, getUser, handleAdminLogin, handleBlackListIp, removeBlackListIp, removeUser } from "../controller/admin.controller.js";
 import { deactivateRoom } from "../db/queries/rooms.js";
 
 
@@ -11,4 +11,7 @@ adminRouter.delete("/:id",deactivateRoom);
 adminRouter.get("/blacklist",getBlackListedIps);
 adminRouter.post("/blackList",handleBlackListIp);
 adminRouter.delete("/blackList/:hashedIp",removeBlackListIp);
+adminRouter.get("/users",getActiveUsers);
+adminRouter.get("/users/:userId",getUser);
+adminRouter.delete("/users/:userId",removeUser);
 
