@@ -14,14 +14,10 @@ app.use(cookieParser());
 
 app.use(helmet());
 
-console.log(process.env.WHITELISTED_CLIENT_URL);
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "https://incompactly-companionate-venice.ngrok-free.dev",
-    ],
+    origin:process.env.WHITELISTED_CLIENT_URL ,
     methods: ["GET", "POST"],
     credentials: true,
   }),
