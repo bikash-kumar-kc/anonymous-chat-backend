@@ -1,0 +1,1 @@
+export const MAX_USER_KNOW_TIME = 2*60*60

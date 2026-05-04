@@ -14,6 +14,7 @@ export async function onLocationUpdate(io, socket, { lat, lng }) {
     const { userId } = socket;
 
     if (!lat || !lng || isNaN(lat) || isNaN(lng)) return;
+    
 
     // debounce — wait 10s before acting on location change
     if (reassignTimeouts.has(userId)) {

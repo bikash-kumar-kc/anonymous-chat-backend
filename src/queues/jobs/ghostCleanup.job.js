@@ -1,6 +1,9 @@
 import { ghostCleanupQueue } from '../index.js'
 
+const GHOST_CLEANUP = 5*60*1000;
+
 export async function scheduleGhostCleanup() {
+  
   // remove any existing repeat jobs first to avoid duplicates
   await ghostCleanupQueue.obliterate({ force: true })
 
@@ -9,9 +12,10 @@ export async function scheduleGhostCleanup() {
     'cleanup',
     {},
     {
-      repeat: { every: 5 * 60 * 1000 }
+      repeat: { every:  GHOST_CLEANUP }
     }
   )
 
   console.log('👻 Ghost cleanup scheduled every 5 minutes')
-}
+};
+

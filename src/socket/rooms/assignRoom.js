@@ -5,7 +5,7 @@ export async function assignRoom(socket, userId, roomId) {
   await redis.sadd(`room:${roomId}:users`, userId)
 
   // update user's roomId in Redis
-  await redis.hset(`user:${userId}`, 'roomId', roomId)
+  await redis.hset(`user:${userId}`, 'roomId', roomId);
 
   // join socket room
   socket.join(roomId);

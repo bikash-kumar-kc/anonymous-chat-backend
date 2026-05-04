@@ -1,5 +1,5 @@
 {
-  "id": "992bf565-e247-4e12-bf5a-c5f34a64ad7b",
+  "id": "24b6fb31-615a-4e91-bf41-aaa76a3288ec",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -115,6 +115,12 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'active'"
+        },
+        "sender": {
+          "name": "sender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         },
         "sent_at": {
           "name": "sent_at",

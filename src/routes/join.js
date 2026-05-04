@@ -6,19 +6,23 @@ import { isBlacklisted } from "../utils/blacklist.js";
 
 export const joinRouter = Router();
 
-joinRouter.post("/join", async (req, res) => {
+joinRouter.post("/", async (req, res) => {
   try {
     const { lat, lng } = req.body;
+    let randomId = req.cookies?.randomId;
 
     // validate coordinates
     if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
       return res.status(400).json({ error: "Invalid coordinates" });
-    }
+    };
+
+
 
     const parsedLat = parseFloat(lat);
     const parsedLng = parseFloat(lng);
 
     // validate coordinate ranges
+
     if (
       parsedLat < -90 ||
       parsedLat > 90 ||
@@ -26,17 +30,32 @@ joinRouter.post("/join", async (req, res) => {
       parsedLng > 180
     ) {
       return res.status(400).json({ error: "Coordinates out of range" });
-    }
+    };
+
+    if(!randomId){
+      console.log("New user.");
+      randomId = uuidv4();
+      res.cookie("randomId",randomId,{
+        maxAge: 2 * 60 * 60 * 1000, 
+        httpOnly: true,             
+        sameSite: "none",
+        secure:true
+      });
+     
+    }else{
+      console.log("Old user");
+    };
 
     // get and hash IP
     const rawIp =
       req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
       req.socket.remoteAddress;
 
-    const { hashedIp, salt } = hashIp(rawIp);
+    const { hashedIp} = hashIp(rawIp,randomId);
 
     // blacklist check before issuing token
     const { blacklisted, type } = await isBlacklisted(hashedIp);
+
     if (blacklisted) {
       return res.status(403).json({
         error:
@@ -46,19 +65,17 @@ joinRouter.post("/join", async (req, res) => {
       });
     }
 
-    // generate a short-lived session token
-    // this is passed as socket handshake auth
+    // session token
     const sessionToken = uuidv4();
 
-    // store token in Redis with 60 second TTL
-    // socket must connect within 60 seconds or token expires
+    // token stores in redis for 1min max
     await redis.set(
       `session_token:${sessionToken}`,
-      JSON.stringify({ lat: parsedLat, lng: parsedLng, hashedIp, salt }),
+      JSON.stringify({ lat: parsedLat, lng: parsedLng, hashedIp }),
       "EX",
-      60,
+      300,
     );
-
+    
     return res.status(200).json({ sessionToken });
   } catch (err) {
     console.error("POST /join error:", err);

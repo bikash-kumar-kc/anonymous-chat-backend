@@ -3,13 +3,14 @@ import { blacklistIp, tempBlacklistIp } from './blacklist.js'
 
 const STRIKE_WINDOW = 24 * 60 * 60 * 1000 // 24 hours
 export const MAX_STRIKES = 3
+const STRIKE_CLEANUP = 48*60*60;
 
-export async function addStrike(userId) {
+export async function addStrike(userId,hashedIp) {
   const now = Date.now();
-  const key = `strikes:${userId}`
+  const key = `strikes:${hashedIp}`;
 
   await redis.zadd(key, now, `strike:${now}`);
-  await redis.expire(key, 48 * 60 * 60) // auto clean after 48hr inactivity
+  await redis.expire(key, STRIKE_CLEANUP) // auto clean after 48hr inactivity
 
   return await getRecentStrikeCount(userId)
 }
@@ -30,7 +31,7 @@ export async function resetStrikes(userId) {
 
 // handle full strike logic including ban decision
 export async function handleStrike(userId, hashedIp) {
-  const recentStrikes = await addStrike(userId);
+  const recentStrikes = await addStrike(userId,hashedIp);
 
   if (recentStrikes === 2) {
     return { action: 'warn', strikesRemaining: 1 }
@@ -41,13 +42,13 @@ export async function handleStrike(userId, hashedIp) {
 
     if (banCount >= 2) {
       await blacklistIp(hashedIp);
-      await resetStrikes(userId);
+      await resetStrikes(hashedIp);
       return { action: 'banned_permanent' }
     } else {
       await tempBlacklistIp(hashedIp, 24 * 60 * 60);
       await redis.incr(`bancount:${hashedIp}`);
       await redis.expire(`bancount:${hashedIp}`, 30 * 24 * 60 * 60) // remember 30 days
-      await resetStrikes(userId);
+      await resetStrikes(hashedIp);
       return { action: 'banned_temp' }
     }
   }

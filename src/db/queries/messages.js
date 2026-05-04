@@ -3,14 +3,15 @@ import { messages } from '../../db/schema.js'
 import { eq } from 'drizzle-orm'
 
 // insert new message — called before broadcast
-export async function insertMessage(roomId, senderToken, content) {
+export async function insertMessage(roomId, senderToken, content,sender) {
   const result = await db
     .insert(messages)
     .values({
       roomId,
       senderToken,
       content,
-      status: 'active'
+      status: 'active',
+      sender,
     })
     .returning({
       id: messages.id,

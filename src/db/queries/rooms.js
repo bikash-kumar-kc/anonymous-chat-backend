@@ -5,17 +5,16 @@ import { eq, sql } from 'drizzle-orm'
 // find existing room within 5km of given coordinates
 export async function findRoomNear(lat, lng) {
   const result = await db.execute(sql`
-    SELECT id, center_lat, center_lng
+    SELECT id, center_lat, center_lng, is_active
     FROM rooms
     WHERE ST_DWithin(
       center_point::geography,
       ST_MakePoint(${lng}, ${lat})::geography,
       5000
     )
-    AND is_active = true
     LIMIT 1
   `)
-
+  console.log("result",result);
   return result.rows[0] || null
 }
 
@@ -56,5 +55,13 @@ export async function deactivateRoom(roomId) {
   await db
     .update(rooms)
     .set({ isActive: false })
+    .where(eq(rooms.id, roomId));
+};
+
+
+export async function activateRoom(roomId) {
+  await db
+    .update(rooms)
+    .set({ isActive: true })
     .where(eq(rooms.id, roomId));
 };

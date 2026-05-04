@@ -1,5 +1,4 @@
 import { redis } from "../../config/redis.js";
-import { db } from "../../config/db.js";
 import { moderationQueue } from "../../queues/index.js";
 import leoProfanity from "leo-profanity";
 import { insertMessage } from "../../db/queries/messages.js";
@@ -7,15 +6,26 @@ import { insertMessage } from "../../db/queries/messages.js";
 // load default dictionary on startup
 leoProfanity.loadDictionary();
 
-export async function onMessage(io, socket, { content, roomId }) {
+export async function onMessage(
+  io,
+  socket,
+  { content, roomId = "1022912f-73f8-4270-9a1a-b3f0b352f849" },
+) {
   try {
     const { userId, displayName } = socket;
 
     // 1. basic validation
-    if (!content || typeof content !== "string") return;
-    if (!roomId) return;
+    if (!content || typeof content !== "string") {
+      console.log("no content !");
+      return;
+    }
+    if (!roomId) {
+      console.log("no roomId");
+      return;
+    }
 
     const trimmed = content.trim();
+    console.log("got messaged: ", trimmed);
     if (trimmed.length === 0 || trimmed.length > 500) {
       socket.emit("message_rejected", { reason: "Invalid message length" });
       return;
@@ -40,12 +50,14 @@ export async function onMessage(io, socket, { content, roomId }) {
       roomId,
       userId,
       trimmed,
+      displayName,
     );
 
     // 5. broadcast immediately (optimistic)
     io.to(roomId).emit("message", {
       messageId,
       displayName,
+      userId,
       content: trimmed,
       timestamp: sentAt,
     });
@@ -59,7 +71,6 @@ export async function onMessage(io, socket, { content, roomId }) {
       socketId: socket.id,
       hashedIp: socket.hashedIp,
     });
-    
   } catch (err) {
     console.error("onMessage error:", err);
   }

@@ -31,15 +31,14 @@ export const handleAdminLogin = (req, res) => {
         role: "admin",
       },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JST_EXPIRES_IN },
+      { expiresIn: process.env.JWT_EXPIRES_IN },
     );
 
     console.log(`token: ${token}`);
     res.cookie("jwtToken", token, {
-      maxAge: 1000 * 60 * 60 * 2,
-      httpOnly: true,
-      secure: true,
+      maxAge: 2 * 60 * 60 * 1000,        
       sameSite: "none",
+      secure:true
     });
     res.status(201).json({ token: token });
   } catch (err) {
@@ -84,11 +83,29 @@ export const getActiveRooms = async (req, res, next) => {
         };
       }),
     );
-
+    console.log("rooms: ")
+    console.log(enriched)
     return res.status(200).json({ rooms: enriched });
   } catch (error) {
     console.error("GET /admin/rooms error:", error);
     return next(error);
+  }
+};
+
+export const getActiveRoomsId = async(req,res,next) =>{
+  try {
+    const activeRoomsId = await db
+      .select("id")
+      .from(rooms)
+      .where(eq(rooms.isActive, true))
+      .orderBy(desc(rooms.createdAt));
+
+      return {
+        ids:activeRoomsId
+      }
+  } catch (error) {
+    console.log(process.env.ENVIRONMENT=="production"?"Server problem !":"Problem while fetching active rooms id");
+    next(error)
   }
 };
 
@@ -117,7 +134,7 @@ export const deactivateRoom = async (req, res, next) => {
 
     await redis.del(`room:${id}:users`);
 
-    return res.json({ msg: `room id: ${id} deactivated successfully!` });
+    return res.status(201).json({ msg: `room id: ${id} deactivated successfully!` });
   } catch (err) {
     console.error("DELETE /admin/rooms/:id error:", err);
     next(err);

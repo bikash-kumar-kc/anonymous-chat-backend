@@ -12,18 +12,26 @@
     "format": "prettier . --write"
   },
   "dependencies": {
+    "@moderation-api/sdk": "^3.12.1",
     "@neondatabase/serverless": "^1.0.2",
+    "bcryptjs": "^3.0.3",
     "bullmq": "^5.71.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
     "express": "^5.2.1",
+    "googleapis": "^171.4.0",
     "helmet": "^8.1.0",
     "ioredis": "^5.10.1",
+    "jsonwebtoken": "^9.0.3",
     "leo-profanity": "^1.9.0",
+    "node-fetch": "^3.3.2",
     "openai": "^6.32.0",
     "pg": "^8.20.0",
+    "safecomms": "^0.1.1",
     "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

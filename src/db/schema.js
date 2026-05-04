@@ -21,6 +21,7 @@ export const messages = pgTable('messages', {
   senderToken: text('sender_token').notNull(),
   content: text('content').notNull(),
   status: text('status').default('active'),
+  sender:text('sender').notNull(),
   sentAt: timestamp('sent_at', { withTimezone: true }).defaultNow()
 }, (table) => ({
   roomIdIdx: index('idx_messages_room_id').on(table.roomId, table.sentAt),

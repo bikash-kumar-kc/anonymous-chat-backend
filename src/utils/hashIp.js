@@ -1,10 +1,11 @@
 import crypto from "crypto";
 
-export function hashIp(rawIp) {
+export function hashIp(rawIp,id) {
   // const salt = crypto.randomBytes(16).toString("hex");
+  const modifiedIp = rawIp+id;
   const hashedIp = crypto
     .createHmac("sha256", process.env.IP_SALT)
-    .update(rawIp)
+    .update(modifiedIp)
     .digest("hex");
 
   if (!hashedIp) {

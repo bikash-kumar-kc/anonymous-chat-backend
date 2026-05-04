@@ -1,5 +1,5 @@
 import { redis } from '../../config/redis.js'
-import { deactivateRoom, getRoomById } from '../../db/queries/rooms.js'
+import { deactivateRoom} from '../../db/queries/rooms.js'
 
 export async function leaveRoom(io, userId, roomId) {
   if (!roomId) return
@@ -14,4 +14,4 @@ export async function leaveRoom(io, userId, roomId) {
   if (remaining === 0) {
     await deactivateRoom(roomId)
   }
-}
+};

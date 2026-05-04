@@ -44,15 +44,5 @@ async function start() {
   }
 }
 
-// graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down...')
-  process.exit(0)
-})
-
-process.on('SIGINT', async () => {
-  console.log('SIGINT received, shutting down...')
-  process.exit(0)
-})
 
 start()

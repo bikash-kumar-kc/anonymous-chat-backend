@@ -14,6 +14,7 @@ CREATE TABLE "messages" (
 	"sender_token" text NOT NULL,
 	"content" text NOT NULL,
 	"status" text DEFAULT 'active',
+	"sender" text NOT NULL,
 	"sent_at" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint

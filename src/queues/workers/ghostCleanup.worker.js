@@ -34,6 +34,7 @@ export function startGhostCleanupWorker() {
 
       } else if (timeSince >= GHOST_THRESHOLD) {
         // suspected ghost → mark it
+        console.log("Suspected_ghost: ")
         await redis.hset(key, 'status', 'suspected_ghost');
       }
     }

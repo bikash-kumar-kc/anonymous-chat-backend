@@ -4,6 +4,8 @@ import { generateDisplayName } from "../../utils/nameGenerator.js";
 import { clearExpiredStrikes } from "../../utils/strikes.js";
 import { findOrCreateRoom } from "../rooms/findOrCreate.js";
 import { assignRoom } from "../rooms/assignRoom.js";
+import { isUserAlreadyExist } from "../../utils/isUserAlreadyExist.js";
+import {MAX_USER_KNOW_TIME} from "../../constants/ttl-constants.js"
 
 export async function onConnection(io, socket) {
   try {
@@ -17,52 +19,74 @@ export async function onConnection(io, socket) {
       return;
     }
 
-    // generate anonymous identity
-    const userId = uuidv4();
-    const displayName = generateDisplayName();
+    // user returned within two hrs;
+    const isExist = await isUserAlreadyExist(socket.hashedIp);
 
-    // store session in Redis with 2hr TTL
-    await redis.hset(`user:${userId}`, {
-      userId,
-      displayName,
-      hashedIp: socket.hashedIp,
-      lat,
-      lng,
-      roomId: "",
-      socketId: socket.id,
-      lastSeen: Date.now(),
-      strikes: 0,
-      status: "active",
-    });
+    if (!isExist) {
+      // generate anonymous identity
 
-    await redis.expire(`user:${userId}`, 2 * 60 * 60);
+      const userId = uuidv4();
+      const displayName = generateDisplayName();
+
+      await redis.set(`userHashedIp:${socket.hashedIp}`, userId);
+
+      await redis.expire(`userHashedIp:${socket.hashedIp}`, MAX_USER_KNOW_TIME);
+
+      // store session in Redis with 2hr TTL
+      await redis.hset(`user:${userId}`, {
+        userId,
+        displayName,
+        hashedIp: socket.hashedIp,
+        lat,
+        lng,
+        roomId: "",
+        socketId: socket.id,
+        lastSeen: Date.now(),
+        strikes: 0,
+        status: "active",
+      });
+
+      await redis.expire(`user:${userId}`, MAX_USER_KNOW_TIME);
+    }
+
+    const userId = await redis.get(`userHashedIp:${socket.hashedIp}`);
+
+    const values = await redis.hmget(`user:${userId}`, [
+      "userId",
+      "displayName",
+    ]);
+
 
     // attach to socket for use in other handlers
-    socket.userId = userId;
-    socket.displayName = displayName;
+    socket.userId = values[0];
+    socket.displayName = values[1];
 
     // clean any expired strikes from previous sessions
-    await clearExpiredStrikes(userId);
+    // await clearExpiredStrikes(userId);
 
     // find existing room or create new one
     const roomId = await findOrCreateRoom(parseFloat(lat), parseFloat(lng));
 
-    // assign user to room
-    await assignRoom(socket, userId, roomId);
+   if(!isExist){
+     // assign user to room
+     await assignRoom(socket, userId, roomId);
+   }else{
+    socket.join(roomId);
+   }
 
     // notify user they are connected
     socket.emit("connected", {
-      userId,
-      displayName,
+      userId: values[0],
+      displayName: values[1],
       roomId,
     });
 
     // notify room a new user joined
     socket.to(roomId).emit("user_joined", {
-      message: `${displayName} has joined the area`,
+      message: `${values[1]} has joined the area`,
     });
 
-    console.log(`✅ ${displayName} connected → room ${roomId}`);
+    console.log(` ${values[1]} connected → room ${roomId}`);
   } catch (err) {
     console.error("onConnection error:", err);
     socket.emit("error", { message: "Failed to connect" });

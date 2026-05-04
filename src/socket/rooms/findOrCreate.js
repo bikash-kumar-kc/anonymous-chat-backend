@@ -1,30 +1,43 @@
-import { findRoomNear, createRoom } from '../../db/queries/rooms.js'
-import { neon } from '@neondatabase/serverless'
+import {
+  findRoomNear,
+  createRoom,
+  activateRoom,
+} from "../../db/queries/rooms.js";
+import { neon } from "@neondatabase/serverless";
 
-const sql = neon(process.env.DATABASE_URL)
+const sql = neon(process.env.DATABASE_URL);
 
 export async function findOrCreateRoom(lat, lng) {
   // advisory lock to prevent race condition
-  const lockId = getGridCellId(lat, lng)
+  const lockId = getGridCellId(lat, lng);
 
-  await sql`SELECT pg_advisory_lock(${lockId})`
+  await sql`SELECT pg_advisory_lock(${lockId})`;
 
   try {
     // search for existing room
-    const existing = await findRoomNear(lat, lng)
-    if (existing) return existing.id
+    const existing = await findRoomNear(lat, lng);
+    if (existing) {
+      console.log("room already exist: ");
+
+      if (!existing.is_active) {
+        await activateRoom(existing.id);
+        console.log("Wow !  Room status got updated!!!")
+      }
+      return existing.id;
+    } else {
+      console.log("Room not already exist: ");
+    }
 
     // create new room
-    const roomId = await createRoom(lat, lng)
-    return roomId
-
+    const roomId = await createRoom(lat, lng);
+    return roomId;
   } finally {
-    await sql`SELECT pg_advisory_unlock(${lockId})`
+    await sql`SELECT pg_advisory_unlock(${lockId})`;
   }
 }
 
 function getGridCellId(lat, lng) {
-  const gridLat = Math.floor(lat * 20)
-  const gridLng = Math.floor(lng * 20)
-  return Math.abs(gridLat * 1000 + gridLng)
+  const gridLat = Math.floor(lat * 20);
+  const gridLng = Math.floor(lng * 20);
+  return Math.abs(gridLat * 1000 + gridLng);
 }
