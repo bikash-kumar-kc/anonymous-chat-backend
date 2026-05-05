@@ -12,12 +12,12 @@ export async function addStrike(userId,hashedIp) {
   await redis.zadd(key, now, `strike:${now}`);
   await redis.expire(key, STRIKE_CLEANUP) // auto clean after 48hr inactivity
 
-  return await getRecentStrikeCount(userId)
+  return await getRecentStrikeCount(hashedIp);
 }
 
-export async function getRecentStrikeCount(userId) {
+export async function getRecentStrikeCount(hashedIp) {
   const windowStart = Date.now() - STRIKE_WINDOW;
-  return await redis.zcount(`strikes:${userId}`, windowStart, '+inf')
+  return await redis.zcount(`strikes:${hashedIp}`, windowStart, '+inf')
 }
 
 export async function clearExpiredStrikes(userId) {

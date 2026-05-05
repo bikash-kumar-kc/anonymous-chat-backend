@@ -34,4 +34,4 @@ export const notificationQueue = new Queue('notification', {
 export const ghostCleanupQueue = new Queue('ghost-cleanup', {
   connection: redis,
   defaultJobOptions
-})
+});

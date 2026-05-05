@@ -16,8 +16,6 @@ joinRouter.post("/", async (req, res) => {
       return res.status(400).json({ error: "Invalid coordinates" });
     };
 
-
-
     const parsedLat = parseFloat(lat);
     const parsedLng = parseFloat(lng);
 

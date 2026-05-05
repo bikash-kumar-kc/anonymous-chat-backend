@@ -11,10 +11,7 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 app.use(cookieParser());
-
 app.use(helmet());
-
-
 app.use(
   cors({
     origin:process.env.WHITELISTED_CLIENT_URL ,

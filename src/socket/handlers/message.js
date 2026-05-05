@@ -9,7 +9,7 @@ leoProfanity.loadDictionary();
 export async function onMessage(
   io,
   socket,
-  { content, roomId = "1022912f-73f8-4270-9a1a-b3f0b352f849" },
+  { content, roomId},
 ) {
   try {
     const { userId, displayName } = socket;

@@ -29,8 +29,8 @@ export async function isBlacklisted(hashedIp) {
 
 // bot detection — too many connections in short window
 export async function checkConnectionRate(hashedIp) {
-  const key = `connrate:${hashedIp}`
-  const attempts = await redis.incr(key)
+  const key = `connrate:${hashedIp}`;
+  const attempts = await redis.incr(key);
 
   if (attempts === 1) {
     await redis.expire(key, 60) // 60 second window
@@ -41,5 +41,5 @@ export async function checkConnectionRate(hashedIp) {
     return true
   }
 
-  return false
+  return false;
 }

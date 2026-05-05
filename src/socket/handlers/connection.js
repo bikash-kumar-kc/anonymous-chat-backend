@@ -24,12 +24,10 @@ export async function onConnection(io, socket) {
 
     if (!isExist) {
       // generate anonymous identity
-
       const userId = uuidv4();
       const displayName = generateDisplayName();
 
       await redis.set(`userHashedIp:${socket.hashedIp}`, userId);
-
       await redis.expire(`userHashedIp:${socket.hashedIp}`, MAX_USER_KNOW_TIME);
 
       // store session in Redis with 2hr TTL
@@ -60,9 +58,6 @@ export async function onConnection(io, socket) {
     // attach to socket for use in other handlers
     socket.userId = values[0];
     socket.displayName = values[1];
-
-    // clean any expired strikes from previous sessions
-    // await clearExpiredStrikes(userId);
 
     // find existing room or create new one
     const roomId = await findOrCreateRoom(parseFloat(lat), parseFloat(lng));
