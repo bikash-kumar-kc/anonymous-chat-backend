@@ -9,11 +9,6 @@ export async function onDisconnect(io, socket) {
     const user = await redis.hgetall(`user:${userId}`);
     if (!user) return
 
-    socket.emit("disconnect",{
-      reason:"i am leaving",
-      msg:"bye"
-    });
-
     console.log(`❌ ${user.displayName} disconnected`)
 
   } catch (err) {
