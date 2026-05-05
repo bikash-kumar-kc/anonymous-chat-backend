@@ -6,11 +6,7 @@ import { insertMessage } from "../../db/queries/messages.js";
 // load default dictionary on startup
 leoProfanity.loadDictionary();
 
-export async function onMessage(
-  io,
-  socket,
-  { content, roomId},
-) {
+export async function onMessage(io, socket, { content, roomId }) {
   try {
     const { userId, displayName } = socket;
 
@@ -33,8 +29,16 @@ export async function onMessage(
 
     // 2. membership check
     const isMember = await redis.sismember(`room:${roomId}:users`, userId);
+    let setTimeOutActivated;
     if (!isMember) {
-      socket.disconnect();
+      clearTimeout(setTimeOutActivated);
+      io.to(roomId).emit("disconnect", {
+        reason: "io server disconnect",
+        msg: "userId is missing !!!",
+      });
+      setTimeOutActivated = setTimeout(() => {
+        socket.disconnect();
+      }, 2000);
       return;
     }
 
