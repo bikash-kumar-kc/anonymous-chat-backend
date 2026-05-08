@@ -7,7 +7,7 @@ export async function onDisconnect(io, socket) {
     if (!userId) return;
 
    
-    leaveRoom(io,userId,roomId);
+    await leaveRoom(io,userId,roomId);
     await redis.hset(`user:${userId}`, "roomId", "");
 
     const user = await redis.hgetall(`user:${userId}`);

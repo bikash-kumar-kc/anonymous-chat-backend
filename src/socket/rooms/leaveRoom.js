@@ -10,6 +10,8 @@ export async function leaveRoom(io, userId, roomId) {
     message: 'A user has left the area'
   });
 
+  console.log("roomId",roomId)
+
   console.log("user left from the chat")
 
   const remaining = await redis.scard(`room:${roomId}:users`)
