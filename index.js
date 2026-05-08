@@ -6,6 +6,7 @@ import { connectRedis } from './src/config/redis.js'
 import { initSocket } from './src/config/socket.js'
 import { startWorkers } from './src/queues/workers/index.js'
 import { scheduleGhostCleanup } from './src/queues/jobs/ghostCleanup.job.js'
+import { startGhostCleanupRoomScheduler } from './src/queues/jobs/ghostRoomCleanup.job.js'
 
 const PORT = process.env.PORT || 8000
 
@@ -33,7 +34,10 @@ async function start() {
     await scheduleGhostCleanup()
     console.log('✅ Ghost cleanup scheduled')
 
-    // 6. start listening
+    // 6. schedule cleanup job for room
+    await startGhostCleanupRoomScheduler();
+
+    // 7. start listening
     httpServer.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`)
     })

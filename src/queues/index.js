@@ -35,3 +35,8 @@ export const ghostCleanupQueue = new Queue('ghost-cleanup', {
   connection: redis,
   defaultJobOptions
 });
+
+export const roomCleanUpQueue = new Queue('room-cleanup',{
+  connection:redis,
+  defaultJobOptions
+})
