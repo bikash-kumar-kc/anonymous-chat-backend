@@ -14,8 +14,8 @@ export const isUserAlreadyExist = async (hashedIp) => {
 
   const isUserInfo = await redis.exists(`user:${userId}`);
 
-  if (isUserInfo.roomId) {
-    return true;
+  if (isUserInfo) {
+   return true;
   }
 
   return false;

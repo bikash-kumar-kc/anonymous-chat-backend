@@ -2,6 +2,7 @@ import { redis } from '../../config/redis.js'
 import { MAX_USER_KNOW_TIME } from '../../constants/ttl-constants.js';
 
 export async function assignRoom(socket, userId, roomId) {
+  socket.roomId= roomId;
   // add user to room set in Redis
   await redis.sadd(`room:${roomId}:users`, userId)
   await redis.expire(`room:${roomId}:users`,MAX_USER_KNOW_TIME);

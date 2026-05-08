@@ -1,17 +1,19 @@
-import { redis } from '../../config/redis.js'
-import { leaveRoom } from '../rooms/leaveRoom.js'
+import { redis } from "../../config/redis.js";
+import { leaveRoom } from "../rooms/leaveRoom.js";
 
 export async function onDisconnect(io, socket) {
   try {
-    const { userId } = socket
-    if (!userId) return
+    const { userId, roomId } = socket;
+    if (!userId) return;
+
+    await redis.srem(`room:${roomId}:users`, userId);
+    await redis.hset(`user:${userId}`, "roomId", "");
 
     const user = await redis.hgetall(`user:${userId}`);
-    if (!user) return
+    if (!user) return;
 
-    console.log(`❌ ${user.displayName} disconnected`)
-
+    console.log(`❌ ${user.displayName} disconnected`);
   } catch (err) {
-    console.error('onDisconnect error:', err)
+    console.error("onDisconnect error:", err);
   }
 }

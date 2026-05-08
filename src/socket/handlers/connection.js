@@ -5,7 +5,7 @@ import { clearExpiredStrikes } from "../../utils/strikes.js";
 import { findOrCreateRoom } from "../rooms/findOrCreate.js";
 import { assignRoom } from "../rooms/assignRoom.js";
 import { isUserAlreadyExist } from "../../utils/isUserAlreadyExist.js";
-import {MAX_USER_KNOW_TIME} from "../../constants/ttl-constants.js"
+import { MAX_USER_KNOW_TIME } from "../../constants/ttl-constants.js";
 
 export async function onConnection(io, socket) {
   try {
@@ -20,9 +20,9 @@ export async function onConnection(io, socket) {
     }
 
     // user returned within two hrs;
-    const isExist = await isUserAlreadyExist(socket.hashedIp);
+    const isExists = await isUserAlreadyExist(socket.hashedIp);
 
-    if (!isExist) {
+    if (!isExists) {
       // generate anonymous identity
       const userId = uuidv4();
       const displayName = generateDisplayName();
@@ -54,7 +54,6 @@ export async function onConnection(io, socket) {
       "displayName",
     ]);
 
-
     // attach to socket for use in other handlers
     socket.userId = values[0];
     socket.displayName = values[1];
@@ -62,12 +61,14 @@ export async function onConnection(io, socket) {
     // find existing room or create new one
     const roomId = await findOrCreateRoom(parseFloat(lat), parseFloat(lng));
 
-   if(!isExist){
-     // assign user to room
-     await assignRoom(socket, userId, roomId);
-   }else{
-    socket.join(roomId);
-   }
+    if (!isExists) {
+      // assign user to room
+      await assignRoom(socket, userId, roomId);
+    } else {
+      await redis.sadd(`room:${roomId}:users`, userId) 
+      await redis.hset(`user:${userId}`, "roomId", roomId);
+      socket.join(roomId);
+    }
 
     // notify user they are connected
     socket.emit("connected", {

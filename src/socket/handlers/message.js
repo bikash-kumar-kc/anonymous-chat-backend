@@ -29,10 +29,12 @@ export async function onMessage(io, socket, { content, roomId }) {
 
     // 2. membership check
     const isMember = await redis.sismember(`room:${roomId}:users`, userId);
+    console.log("roomId:",roomId)
+    console.log("isMember",isMember)
     let setTimeOutActivated;
     if (!isMember) {
       clearTimeout(setTimeOutActivated);
-      io.to(roomId).emit("disconnect", {
+      io.to(roomId).emit("user_left", {
         reason: "io server disconnect",
         msg: "userId is missing !!!",
       });
