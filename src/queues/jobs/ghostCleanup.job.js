@@ -15,6 +15,4 @@ export async function scheduleGhostCleanup() {
       repeat: { every: GHOST_CLEANUP },
     },
   );
-
-  console.log("👻 Ghost cleanup scheduled every 5 minutes");
 }

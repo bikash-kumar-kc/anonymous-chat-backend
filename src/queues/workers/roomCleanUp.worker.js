@@ -10,7 +10,7 @@ const ROOM_MAX_AGE = 2 * 60 * 60 * 1000;
 export const startRoomCleanupWorker = () => {
   return new Worker(
     "room-cleanup",
-    async (job) => {
+    async (_job) => {
       const cutoffTime = new Date(Date.now() - ROOM_MAX_AGE);
       let cleanedRooms = 0;
       let failedRooms = 0;
@@ -24,23 +24,20 @@ export const startRoomCleanupWorker = () => {
           );
 
         if (!oldRooms.length) {
-          console.log(" No old rooms to clean up !");
           return { cleanedRooms, notifiedUsers: 0 };
         }
-
-        console.log(`Found ${oldRooms.length} rooms older than 2 hours`);
 
         for (const room of oldRooms) {
           try {
             await cleanupSingleRoom(room);
             cleanedRooms++;
           } catch (error) {
+            void error;
             failedRooms++;
-            console.error(`Failed to cleanup room ${room.id}`, error.message);
           }
         }
       } catch (error) {
-        console.log("Room cleanup job failed: ", error.message);
+        void error;
       }
 
       return { cleanedRooms, failedRooms:failedRooms };
@@ -84,9 +81,6 @@ async function cleanupSingleRoom(room) {
     await db.delete(rooms).where(eq(rooms.id, roomId));
     return true;
   } catch (error) {
-    console.log(
-      `Failed to perform cleanup opeation on room : ${room.id} `,
-      error.message,
-    );
+    void error;
   }
 }

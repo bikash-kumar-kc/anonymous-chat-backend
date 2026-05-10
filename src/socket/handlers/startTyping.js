@@ -3,7 +3,6 @@
 const onStartTyping = (io,socket,data)=>{
 
     if(!io || !socket || !data?.roomId?.trim()){
-        console.log("Problem at handling 'start-typing' event");
         return;
     };
 
@@ -15,9 +14,6 @@ const onStartTyping = (io,socket,data)=>{
         displayName
     });
 
-    console.log(`
-        typing status successfully sent
-        `);
     return;
 
 };

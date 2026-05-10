@@ -14,7 +14,6 @@ async function start() {
   try {
     // 1. connect databases first
     await connectDb()
-    console.log('✅ Postgres connected')
 
     await connectRedis()
     console.log('✅ Redis connected')

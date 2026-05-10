@@ -10,11 +10,7 @@ export async function onDisconnect(io, socket) {
     await leaveRoom(io,userId,roomId);
     await redis.hset(`user:${userId}`, "roomId", "");
 
-    const user = await redis.hgetall(`user:${userId}`);
-    if (!user) return;
-
-    console.log(`❌ ${user.displayName} disconnected`);
-  } catch (err) {
-    console.error("onDisconnect error:", err);
+  } catch {
+    void 0;
   }
 }

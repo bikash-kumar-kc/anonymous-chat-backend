@@ -41,8 +41,6 @@ UserRouter.get("/:roomId",async(req,res,next)=>{
 
         const liveUsers = getIo()?.sockets.adapter.rooms.get(roomId)?.size || 0;
 
-        console.log(`Total Lives user: ${liveUsers}`)
-
         return res.status(200).json({
             error:false,
             users:userInfo,
@@ -50,7 +48,6 @@ UserRouter.get("/:roomId",async(req,res,next)=>{
             liveUsers,
         })
     } catch (error) {
-        console.log(error);
         next(error);
     }
 

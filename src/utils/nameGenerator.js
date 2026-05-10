@@ -16,5 +16,3 @@ const adjectives = [
     const number = Math.floor(Math.random() * 99) + 1
     return `${adj}${noun}${number}` // e.g. SilentFox42
   };
-
-  console.log(generateDisplayName());

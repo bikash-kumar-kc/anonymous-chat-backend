@@ -31,7 +31,6 @@ joinRouter.post("/", async (req, res) => {
     };
 
     if(!randomId){
-      console.log("New user.");
       randomId = uuidv4();
       res.cookie("randomId",randomId,{
         maxAge: 2 * 60 * 60 * 1000, 
@@ -40,8 +39,6 @@ joinRouter.post("/", async (req, res) => {
         secure:true
       });
      
-    }else{
-      console.log("Old user");
     };
 
     // get and hash IP
@@ -75,8 +72,7 @@ joinRouter.post("/", async (req, res) => {
     );
     
     return res.status(200).json({ sessionToken });
-  } catch (err) {
-    console.error("POST /join error:", err);
+  } catch {
     return res.status(500).json({ error: "Internal server error" });
   }
 });

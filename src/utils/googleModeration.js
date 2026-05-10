@@ -18,16 +18,13 @@ async function checkToxicity(text) {
     });
 
     const data = await res.json();
-    console.log(data)
 
     const score =
       data.attributeScores.TOXICITY.summaryScore.value;
 
-    console.log("Toxicity:", score);
-
    return score;
-  } catch (err) {
-    console.error(err);
+  } catch {
+    void 0;
   }
 }
 

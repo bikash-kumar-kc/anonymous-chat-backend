@@ -14,7 +14,6 @@ export async function findRoomNear(lat, lng) {
     )
     LIMIT 1
   `)
-  console.log("result",result);
   return result.rows[0] || null
 }
 

@@ -6,17 +6,6 @@ import checkToxicity from "../../utils/googleModeration.js";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// categories we care about
-const FLAGGED_CATEGORIES = [
-  "harassment",
-  "harassment/threatening",
-  "hate",
-  "hate/threatening",
-  "self-harm",
-  "sexual",
-  "violence",
-];
-
 export function startModerationWorker() {
   return new Worker(
     "moderation",
@@ -57,23 +46,16 @@ export function startModerationWorker() {
 
       if (!result.flagged) return // clean → do nothing;
 
-      // check which categories were flagged
-      const flaggedCategories = FLAGGED_CATEGORIES.filter(
-        (cat) => result.categories[cat] === true
-      );
-
-      console.log(flaggedCategories)
-
-        await Promise.all([
-          deletionQueue.add("delete", { messageId, roomId }),
-          strikeQueue.add("strike", { userId, hashedIp }),
-          notificationQueue.add("notify", {
-            userId,
-            socketId,
-            type: "message_flagged",
-            messageId,
-          }),
-        ]);
+      await Promise.all([
+        deletionQueue.add("delete", { messageId, roomId }),
+        strikeQueue.add("strike", { userId, hashedIp }),
+        notificationQueue.add("notify", {
+          userId,
+          socketId,
+          type: "message_flagged",
+          messageId,
+        }),
+      ]);
 
      
     },

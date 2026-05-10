@@ -34,8 +34,8 @@ export async function onLocationUpdate(io, socket, { lat, lng }) {
         reassignTimeouts.delete(userId);
       }, 10000),
     );
-  } catch (err) {
-    console.error("onLocationUpdate error:", err);
+  } catch {
+    void 0;
   }
 }
 

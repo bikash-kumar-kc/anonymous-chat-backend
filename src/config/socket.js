@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import "dotenv/config";
 import { registerHandlers } from "../socket/index.js";
 import { socketAuthMiddleware } from "../middleware/socketAuth.js";
+import { socketLogger } from "../middleware/socket.logger.js";
 
 let io;
 
@@ -18,6 +19,9 @@ export function initSocket(httpServer) {
 
   // auth middleware runs before every connection
   io.use(socketAuthMiddleware);
+
+  // maintain socket logs...
+  io.use(socketLogger);
 
   // register all socket event handlers
   io.on("connection", (socket) => {

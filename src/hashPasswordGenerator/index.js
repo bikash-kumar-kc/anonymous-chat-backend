@@ -1,19 +1,12 @@
 import bcrypt from "bcryptjs";
 
-const generateHash = async (password) => {
+export const generateHash = async (password) => {
   if (!password || !password.trim()) {
-    console.log(`
-            no error
-            `);
     return;
   }
 
-  const hash = await bcrypt.hash(password, 12);
-
-  console.log(`
-   password:${password} hash password is: ${hash}`);
+  await bcrypt.hash(password, 12);
 
   return;
 };
 
-generateHash("lonelyKumar@anonymouschat")

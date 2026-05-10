@@ -8,10 +8,9 @@ export async function onHeartbeat(socket) {
     await redis.hset(`user:${userId}`, 'lastSeen', Date.now());
     await redis.expire(`user:${userId}`, 2 * 60 * 60)
     socket.emit('heartbeat_ack');
-    console.log("heart beat accepted");
 
-  } catch (err) {
-    console.error('onHeartbeat error:', err);
+  } catch {
+    void 0;
   }
 };
 

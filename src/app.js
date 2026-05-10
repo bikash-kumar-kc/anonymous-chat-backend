@@ -7,6 +7,7 @@ import { MessageRouter } from "./routes/messages.js";
 import {adminRouter} from "./routes/adminRouter.js";
 import { globalErrorHandler } from "./error-handler/globalErrorHandler.js";
 import cookieParser from "cookie-parser";
+import { requestLogger } from "./middleware/http.logger.js";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+app.use(requestLogger); // maintain http error or success logs...
 
 // REST routes
 app.use("/api/join", joinRouter);

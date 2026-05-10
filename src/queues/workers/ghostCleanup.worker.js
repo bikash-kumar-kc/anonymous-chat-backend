@@ -23,7 +23,6 @@ export function startGhostCleanupWorker() {
 
       if (timeSince >= DEFINITE_THRESHOLD) {
         // definite ghost → clean up
-        console.log(`👻 Removing ghost user: ${user.displayName}`);
 
         if (user.roomId) {
           await leaveRoom(io, user.userId, user.roomId)
@@ -34,7 +33,6 @@ export function startGhostCleanupWorker() {
 
       } else if (timeSince >= GHOST_THRESHOLD) {
         // suspected ghost → mark it
-        console.log("Suspected_ghost: ")
         await redis.hset(key, 'status', 'suspected_ghost');
       }
     }

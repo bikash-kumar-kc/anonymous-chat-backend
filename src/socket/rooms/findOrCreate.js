@@ -17,15 +17,11 @@ export async function findOrCreateRoom(lat, lng) {
     // search for existing room
     const existing = await findRoomNear(lat, lng);
     if (existing) {
-      console.log("room already exist: ");
 
       if (!existing.is_active) {
         await activateRoom(existing.id);
-        console.log("Wow !  Room status got updated!!!")
       }
       return existing.id;
-    } else {
-      console.log("Room not already exist: ");
     }
 
     // create new room

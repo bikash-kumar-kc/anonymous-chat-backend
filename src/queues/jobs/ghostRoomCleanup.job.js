@@ -10,6 +10,4 @@ export const startGhostCleanupRoomScheduler = async () => {
     },
     {},
   );
-
-  console.log("Room clean up is scheduled for every 2hrs");
 };

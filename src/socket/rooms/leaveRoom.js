@@ -1,21 +1,17 @@
-import { redis } from '../../config/redis.js'
-import { deactivateRoom} from '../../db/queries/rooms.js'
+import { redis } from "../../config/redis.js";
+import { deactivateRoom } from "../../db/queries/rooms.js";
 
 export async function leaveRoom(io, userId, roomId) {
-  if (!roomId) return
+  if (!roomId) return;
 
   await redis.srem(`room:${roomId}:users`, userId);
 
-  io.to(roomId).emit('user_left', {
-    message: 'A user has left the area'
+  io.to(roomId).emit("user_left", {
+    message: "A user has left the area",
   });
 
-  console.log("roomId",roomId)
-
-  console.log("user left from the chat")
-
-  const remaining = await redis.scard(`room:${roomId}:users`)
+  const remaining = await redis.scard(`room:${roomId}:users`);
   if (remaining === 0) {
-    await deactivateRoom(roomId)
+    await deactivateRoom(roomId);
   }
-};
+}

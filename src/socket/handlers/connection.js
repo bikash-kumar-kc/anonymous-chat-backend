@@ -82,9 +82,7 @@ export async function onConnection(io, socket) {
       message: `${values[1]} has joined the area`,
     });
 
-    console.log(` ${values[1]} connected → room ${roomId}`);
-  } catch (err) {
-    console.error("onConnection error:", err);
+  } catch {
     socket.emit("error", { message: "Failed to connect" });
     socket.disconnect();
   }

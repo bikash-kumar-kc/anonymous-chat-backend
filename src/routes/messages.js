@@ -10,7 +10,6 @@ export const MessageRouter = express.Router();
 
 MessageRouter.get("/:roomId",async(req,res,next)=>{
     const {roomId} = req.params;
-    console.log("roomId",roomId);
     const isUuid = uuidValidate(roomId);
     if(!isUuid){
         return res.status(400).json({
@@ -29,7 +28,6 @@ MessageRouter.get("/:roomId",async(req,res,next)=>{
         totalMessages:allMessages.length
        })
     } catch (error) {
-       console.log(error);
        next(error)
     }
 })

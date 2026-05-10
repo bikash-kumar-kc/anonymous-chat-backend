@@ -22,7 +22,6 @@ export const handleAdminLogin = (req, res) => {
   try {
     const valid = bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
     if (!valid) {
-      console.error(`Invalid password!!!`);
       return res.status(401).json({ error: "Invalid credentials" });
     }
     const token = jwt.sign(
@@ -34,15 +33,13 @@ export const handleAdminLogin = (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN },
     );
 
-    console.log(`token: ${token}`);
     res.cookie("jwtToken", token, {
       maxAge: 2 * 60 * 60 * 1000,        
       sameSite: "none",
       secure:true
     });
     res.status(201).json({ token: token });
-  } catch (err) {
-    console.error(err);
+  } catch {
     return res.status(500).json({
       error:
         process.env.ENVIRONMENT === "production"
@@ -83,11 +80,8 @@ export const getActiveRooms = async (req, res, next) => {
         };
       }),
     );
-    console.log("rooms: ")
-    console.log(enriched)
     return res.status(200).json({ rooms: enriched });
   } catch (error) {
-    console.error("GET /admin/rooms error:", error);
     return next(error);
   }
 };
@@ -104,7 +98,6 @@ export const getActiveRoomsId = async(req,res,next) =>{
         ids:activeRoomsId
       }
   } catch (error) {
-    console.log(process.env.ENVIRONMENT=="production"?"Server problem !":"Problem while fetching active rooms id");
     next(error)
   }
 };
@@ -136,7 +129,6 @@ export const deactivateRoom = async (req, res, next) => {
 
     return res.status(201).json({ msg: `room id: ${id} deactivated successfully!` });
   } catch (err) {
-    console.error("DELETE /admin/rooms/:id error:", err);
     next(err);
   }
 };
@@ -164,7 +156,6 @@ export const getBlackListedIps = async (req, res, next) => {
 
     return res.json({ permanent, temp });
   } catch (error) {
-    console.error("GET /admin/blacklist error:", error);
     next(error);
   }
 };
@@ -194,7 +185,6 @@ export const handleBlackListIp = async (req, res, next) => {
 
     return res.json({ msg: `hashedIp:${hashedIp} got blacklist !!!` });
   } catch (error) {
-    console.error("POST /admin/blacklist error:", error);
     next(error);
   }
 };
@@ -209,7 +199,6 @@ export const removeBlackListIp = async (req, res, next) => {
 
     return res.json({ success: true });
   } catch (error) {
-    console.error("DELETE /admin/blacklist error:", error);
     next(error);
   }
 };
@@ -219,7 +208,6 @@ export const getActiveUsers = async (req, res, next) => {
     const userKeys = await redis.keys("user:*");
 
     if (!userKeys.length) {
-      console.log("No users in the application !!!");
       return res.json({ users: [], total: 0 });
     }
 
@@ -238,7 +226,6 @@ export const getActiveUsers = async (req, res, next) => {
 
     return res.status(200).json({ users });
   } catch (error) {
-    console.error("GET /admin/users error:", error);
     next(error);
   }
 };
@@ -293,7 +280,6 @@ export const getUser = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error("GET /admin/users/:userId error:", error);
     next(error);
   }
 };
@@ -329,7 +315,6 @@ export const removeUser = async (req, res, next) => {
 
     return res.json({ msg: `User with userId : ${userId} is removed` });
   } catch (error) {
-    console.error('DELETE /admin/users/:userId error:', error)
     next(error);
   }
 };

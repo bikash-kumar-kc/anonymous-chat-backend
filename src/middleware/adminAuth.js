@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 
 export const adminAuthMiddleware = (req, res, next) => {
   const jwtToken = req.cookies?.jwtToken;
-  console.log("jwtToken: ", jwtToken);
 
   if (!jwtToken || !jwtToken.trim()) {
     return res.status(401).json({
@@ -19,10 +18,7 @@ export const adminAuthMiddleware = (req, res, next) => {
     }
     req.admin = decoded;
     next();
-  } catch (error) {
-    console.log(`
-            error adminAuthMiddleWare`);
-    console.log(error);
+  } catch {
     return res.status(401).json({ error: "Invalid or expired Token" });
   }
 };

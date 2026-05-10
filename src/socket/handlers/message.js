@@ -12,16 +12,13 @@ export async function onMessage(io, socket, { content, roomId }) {
 
     // 1. basic validation
     if (!content || typeof content !== "string") {
-      console.log("no content !");
       return;
     }
     if (!roomId) {
-      console.log("no roomId");
       return;
     }
 
     const trimmed = content.trim();
-    console.log("got messaged: ", trimmed);
     if (trimmed.length === 0 || trimmed.length > 500) {
       socket.emit("message_rejected", { reason: "Invalid message length" });
       return;
@@ -29,8 +26,6 @@ export async function onMessage(io, socket, { content, roomId }) {
 
     // 2. membership check
     const isMember = await redis.sismember(`room:${roomId}:users`, userId);
-    console.log("roomId:",roomId)
-    console.log("isMember",isMember)
     let setTimeOutActivated;
     if (!isMember) {
       clearTimeout(setTimeOutActivated);
@@ -77,7 +72,7 @@ export async function onMessage(io, socket, { content, roomId }) {
       socketId: socket.id,
       hashedIp: socket.hashedIp,
     });
-  } catch (err) {
-    console.error("onMessage error:", err);
+  } catch {
+    void 0;
   }
 }
