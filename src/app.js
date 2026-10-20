@@ -10,15 +10,25 @@ import cookieParser from "cookie-parser";
 import { requestLogger } from "./middleware/http.logger.js";
 
 const app = express();
+const whitelist = process.env.WHITELISTED_CLIENT_URL?.split(",") ?? [];
 
 app.use(cookieParser());
 app.use(helmet());
+
+
 app.use(
   cors({
-    origin:process.env.WHITELISTED_CLIENT_URL ,
+    origin: (origin, callback) => {
+      // Allow requests without an Origin header (e.g. Postman/server-to-server)
+      if (!origin || whitelist.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true,
-  }),
+  })
 );
 app.use(express.json());
 app.use(cookieParser());
